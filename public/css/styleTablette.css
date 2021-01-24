@@ -1,0 +1,29 @@
+body {
+	font-size: 0.9em;
+	width: 100%;
+	}
+#logo {
+	width: 30%;
+}
+
+.title {
+font-size: 3em;
+width: 700px;
+}
+
+/* Research */
+
+input {
+	width: 400px;
+	height: 30px;
+}
+
+/* Research Results or Poch'List */
+
+#bookTable {
+	font-size: 0.9em;
+}
+
+td {
+	width: 700px;
+}
