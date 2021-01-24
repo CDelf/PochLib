@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="fr">
+	<head>
+		<title>Poch'Lib</title>
+		<meta charset="utf-8" />
+	</head>	
+<div id="form_body">
+<!-- Partie formulaire -->
+		<form method="post" action="main.js"> 
+			<p>
+			<label for="title">Titre du livre</label> <br>
+			<input type="text" name="title" id="title" required />
+			</p>
+			<label for="author">Auteur</label>
+			<br>
+			<input type="text" name="author" id="author" required />
+		</form>
+
+<!-- Boutons de navigation -->
+		<nav id="form_nav">
+		<p>
+		<button id="research" onclick="getBooksApiGoogle();">
+			Rechercher
+		</button>
+		</p>
+		<p>
+		<button id="cancel" onclick="cancel()">
+			Annuler
+		</button >
+		</p>
+		</nav>
+	</div>
