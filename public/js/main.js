@@ -16,6 +16,7 @@ function init(){
 // Displays the main page
 function cancel(){
 	document.getElementById("ajout_livre").innerHTML=CreateDivButtonAddBook();
+	document.getElementById("error").innerHTML="";
 	document.getElementById("searchResult").innerHTML="";
 	getBooksStorageSession("content",true);
 }
