@@ -1,31 +1,42 @@
 //initialize the app
 init();
 
+/**
+ * Creates the "add a book" button and loads the research.html page
+ */
 function init(){
-	//getContent('search.html', 'content');
-	//Create the "add a book" button to load the research.html page
+
 	const button = document.createElement("div");
 	button.innerHTML = '<div id="ajout_livre">'+CreateDivButtonAddBook()+'</div><div style="color: red" id=\'error\'></div>';
 	let myBooks = document.getElementById("myBooks");
 	var childs = myBooks.childNodes;
 	childs[5].appendChild(button);
-	//get Google Books API
+	//get books from session storage
 	getBooksStorageSession("content",true);
 }
 
-// Displays the main page
+/**
+ * Displays the main page
+ */
 function cancel(){
-	document.getElementById("ajout_livre").innerHTML=CreateDivButtonAddBook();
+	// Deletes all elements
 	document.getElementById("error").innerHTML="";
 	document.getElementById("searchResult").innerHTML="";
+	// Reloads main page
+	document.getElementById("ajout_livre").innerHTML=CreateDivButtonAddBook();
 	getBooksStorageSession("content",true);
 }
 
-// Creates the 'add a book' button et loads the search form.
+/**
+ * Creates the 'add a book' button et loads the search form (external html)
+ */
 function CreateDivButtonAddBook() {
 	return '<button id="btn" onclick="getContent(\'research.html\',\'ajout_livre\')">Ajouter un livre</button>';
 }
 
+/**
+ * Gets the whole content of an external html file
+ */
 function getContent(template,id) {
 	var z, i, elmnt, file, xhttp;
 	/* Loop through a collection of all HTML elements: */
@@ -46,12 +57,16 @@ function getContent(template,id) {
 			}
 			xhttp.open("GET", file, true);
 			xhttp.send();
-			/* Exit the function: */
 			return;
 		}
 	}
 }
 
+/**
+ * Gets search fields's content entered by the user.
+ * If incorrect, returns an error.
+ * If not, launches a request using Google Books API to search the book.
+ */
 // Using the Google Books API to search
 function getBooksApiGoogle(){
 	var bookName = document.getElementById("title").value;
@@ -94,40 +109,38 @@ function getBooksApiGoogle(){
 	}
 }
 
-//
-function getBooksStorageSession(id,title){
+/**
+ * Gets books from session storage
+ * @param {id} id of the element's location
+ * @param {isBooksMarked} If true applies poch'list layout, else applies search layout.
+ */
+function getBooksStorageSession(id,isBooksMarked){
 	if(sessionStorage.getItem('books') != "undefined"){
 		var books = JSON.parse(sessionStorage.getItem('books'));
-		CreateTableFromJSON(books,id,title);
+		CreateTableFromJSON(books,id,isBooksMarked);
 	}
 }
 
+/**
+ * Creates list of books (poch'list or search results)
+ * @param {myBooks} book list JSON format
+ * @param {id} id of the element's location
+ * @param {isBooksMarked} If true applies poch'list layout, else applies search layout.
+ */
 function CreateTableFromJSON(myBooks,id,isBooksMarked) {
-	// Extracts value for html header.
-	// ('Book ID', 'Book Name', 'Category' and 'Price')
 	var col = [];
 	var divContainer = document.getElementById(id);
 	// Creates dynamic table.
 	var table = document.createElement("table");
 	if(myBooks != null){
-		for (var i = 0; i < myBooks.length; i++) {
-			for (var key in myBooks[i]) {
-				if (col.indexOf(key) === -1) {
-					col.push(key);
-				}
-			}
-		}
 		// Creates html table header row using the extracted headers above.
-		var tr = table.insertRow(-1);                   // Table row.
-
+		var tr = table.insertRow(-1);
 		// Add JSON data to the table as rows.
 		for (var i = 0; i < myBooks.length; i++) {
 			tr = table.insertRow(-1);
-			for (var j = 0; j < 1; j++) {
 				var tabCell = tr.insertCell(-1);
 				var book =  counstructBookTable(myBooks[i],isBooksMarked,tr);
 				tabCell.innerHTML = book;
-			}
 		}
 	}
 	// Finally add the newly created table with JSON data to a container.
@@ -136,12 +149,18 @@ function CreateTableFromJSON(myBooks,id,isBooksMarked) {
 	divContainer.appendChild(table);
 }
 
+/**
+ * Constructs book's view from JSON book structure
+ * @param {myBooks} book list JSON format
+ * @param {isBooksMarked} If true applies poch'list layout, else applies search layout.
+ * @return {book} book's view
+ */
 function counstructBookTable(myBook, isBooksMarked) {
 	// check if myBook is not undefined
 	if (typeof myBook == "undefined" || myBook ==null) {
 		return;
 	}
-	// variables declaration
+	// variables declaration with default values
 	var idBook = "";
 	var title = "Information manquante";
 	var author = "Information manquante";
@@ -164,26 +183,19 @@ function counstructBookTable(myBook, isBooksMarked) {
 			author = myBook["volumeInfo"]["authors"][0];
 		}
 		// cas : get book by id via api google books
-		if (isBooksMarked) {
-			if (typeof myBook["volumeInfo"]["description"] != "undefined") {
-				description = myBook["volumeInfo"]["description"];
-				shortDescription = description.length > 200 ?
-					description.slice(0, 199) + "<a onclick='showMore(\"" + idBook + "\")' style='color: blue'> Lire la suite...</a></div><br>" :
-					description;
-			}
+		if (typeof myBook["volumeInfo"]["description"] != "undefined") {
+			description = myBook["volumeInfo"]["description"];
+			shortDescription = description.length > 200 ?
+				description.slice(0, 199) + "<a onclick='showMore(\"" + idBook + "\")' style='color: blue'> Lire la suite...</a></div><br>" :
+				description;
 		}
+
 		// get description
 		if (typeof myBook["volumeInfo"]["imageLinks"] != "undefined") {
 			imgBook = myBook["volumeInfo"]["imageLinks"]["smallThumbnail"];
 		}
 	}
-	// cas : get all book by title & author via api google books => description = textSnippet
-	if (typeof myBook["searchInfo"] != "undefined") {
-		description = myBook["searchInfo"]["textSnippet"];
-		shortDescription = description.length > 200 ?
-			description.slice(0, 199) + "<a onclick='showMore(\"" + idBook + "\")' style='color: blue'> Lire la suite...</a></div><br>" :
-			description;
-	}
+
 	// create dynamic icon "font lib" trash & mark book
 	var imgBookMarkOrDeleteBook = isBooksMarked?"fas fa-trash-alt":"fas fa-bookmark";
 	// create dynamic functions add & delete book
@@ -205,18 +217,29 @@ function counstructBookTable(myBook, isBooksMarked) {
 
 	return book;
 }
-// Shows the book's whole description
+
+/**
+ * Displays the whole description hiding the short one
+ * @param {idBookDescription} identifies the book's description
+ */
 function showMore(idBookDescription){
 	document.getElementById("moreDes-"+idBookDescription).style.display="block";
 	document.getElementById("hideDes-"+idBookDescription).style.display="none";
 }
-// Limits the book's description to 200 characters.
+
+/**
+ * Displays the short book's description(limited to 200 characters) hiding the long one.
+ * @param {idBookDescription} identifies the book's description
+ */
 function hide(idBookDescription){
 	document.getElementById("moreDes-"+idBookDescription).style.display="none";
 	document.getElementById("hideDes-"+idBookDescription).style.display="block";
 }
 
-// Deletes books from the storage session
+/**
+ * Deletes books from the storage session
+ * @param {idBook} identifies the book's id
+ */
 function deleteBook(idBook){
 	if(sessionStorage.getItem('books') != null) {
 		var books = JSON.parse(sessionStorage.getItem('books'));
@@ -232,22 +255,22 @@ function deleteBook(idBook){
 	}
 }
 
-// Add books in the storage session
+/**
+ * Add books in the storage session
+ * @param {idBook} identifies the book's id
+ */
 function addBook(idBook){
 	var xhttp;
 	var books = [];
-	var	isBookExiste =false;
+	var	isBookExiste = false;
 	if(sessionStorage.getItem('books') !== null){
 		books = JSON.parse(sessionStorage.getItem('books'));
 		books.forEach((item, index) => {
 			if (item["id"] == idBook) {
-				isBookExiste = true;
+				alert("Vous ne pouvez pas ajouter deux fois le même livre");
+				return;
 			}
 		});
-		if(isBookExiste) {
-			alert("Vous ne pouvez pas ajouter deux fois le même livre");
-			return;
-		}
 	}
 	xhttp = new XMLHttpRequest();
 
