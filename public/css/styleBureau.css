@@ -1,39 +1,15 @@
+body { width: 100%; font-size: 1em; }
 
+#logo { width: 30%; }
 
-body {
-	width: 100%;
-	font-size: 1em;
-}
+.title { font-size: 3em; width: 1400px; }
 
-
-#logo {
-	width: 30%;
-}
-
-.title {
-font-size: 3em;
-width: 1400px;
-}
-
-#btn {
-	font-size: 0.8em;
-}
+#btn { font-size: 0.8em; }
 
 /* Research */
-
-input {
-	width: 500px;
-	height: 30px;
-	font-size: 1em;
-}
+input { width: 500px; height: 30px; font-size: 1em; }
 
 /* Research Results or Poch'List */
+#bookTable { font-size: 1em; }
 
-
-#bookTable {
-	font-size: 1em;
-}
-
-td {
-	width: 1400px;
-}
+td { width: 1400px; }
